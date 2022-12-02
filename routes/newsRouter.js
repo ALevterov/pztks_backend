@@ -1,9 +1,9 @@
 const Router = require('express')
 const router = new Router()
+const newsController = require('../controllers/newsController')
 
-router.get('/', (req, res) => {
-  res.status(200).json({ message: 'ALL WORKING!!! ' })
-})
-router.post('/')
+router.get('/', newsController.getAll)
+router.get('/:id', newsController.getById)
+router.post('/', newsController.create)
 
 module.exports = router
