@@ -20,7 +20,8 @@ class AuthController {
         return next(ApiError.badRequest(errors))
       }
       const { email, password } = req.body
-      const candidate = await User.findOne({ email })
+      const candidate = await User.findOne({ where: { email } })
+      console.log('candidate', candidate)
       if (candidate) {
         return next(
           ApiError.badRequest('Пользователь с таким email уже существует')
@@ -30,11 +31,15 @@ class AuthController {
       const user = await User.create({
         email,
         password: hashPassword,
-        role: 'User', // один раз изменяем код и создаем Admin
+        roles: ['Admin', 'User'], // один раз изменяем код и создаем Admin
       })
       const token = generateAccesToken(user.id, user.roles)
-      return res.json({ access: token })
+      return res.json({
+        user: { email: user.email, roles: user.roles },
+        access: token,
+      })
     } catch (error) {
+      console.log(error)
       return next(ApiError.internal('Ошибка регистрации'))
     }
   }
@@ -42,7 +47,7 @@ class AuthController {
   async login(req, res) {
     try {
       const { email, password } = req.body
-      const candidate = await User.findOne({ email })
+      const candidate = await User.findOne({ where: { email } })
       if (!candidate) {
         return next(
           ApiError.badRequest('Пользователь с таким email не существует')
@@ -56,14 +61,6 @@ class AuthController {
       return res.json({ access: token })
     } catch (error) {}
   }
-
-  // async check(req, res, next) {
-  //   const { id } = req.params
-  //   if (!id) {
-  //     return next(ApiError.badRequest('не задан id'))
-  //   }
-  //   res.json({ id })
-  // }
 }
 
 module.exports = new AuthController()

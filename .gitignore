@@ -1,5 +1,5 @@
 /node_modules
-/static
+# /static/*
 
 /.pnp
 .pnp.js
