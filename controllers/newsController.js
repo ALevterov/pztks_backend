@@ -36,11 +36,20 @@ class NewsController {
   }
 
   async getById(req, res, next) {
-    const { newsId } = req.query
+    const { id: newsIdnewsId } = req.query
     if (!newsId) {
       return next(ApiError.badRequest('не задан id новости'))
     }
     const news = await News.findAll({ where: { id: newsId } })
+    return res.json(news)
+  }
+  async remove(req, res, next) {
+    const { id: newsId } = req.query
+    console.log(id)
+    if (!newsId) {
+      return next(ApiError.badRequest('не задан id новости'))
+    }
+    const news = await News.destroy({ where: { id: newsId } })
     return res.json(news)
   }
 }
